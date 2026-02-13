@@ -10,7 +10,19 @@ fi
 
 # Symlink dotfiles
 ln -sf ~/dotfiles/bash_aliases ~/.bash_aliases
-ln -sf ~/dotfiles/gitconfig ~/.gitconfig
+
+# Remove old gitconfig symlink if it exists
+if [ -L ~/.gitconfig ]; then
+    rm ~/.gitconfig
+    touch ~/.gitconfig
+fi
+
+# Include gitconfig in ~/.gitconfig if not already present
+if ! grep -q "path = ~/dotfiles/gitconfig" ~/.gitconfig 2>/dev/null; then
+    echo "" >> ~/.gitconfig
+    echo "[include]" >> ~/.gitconfig
+    echo "    path = ~/dotfiles/gitconfig" >> ~/.gitconfig
+fi
 
 # Append source line to existing .bashrc if not already present
 if ! grep -q "source ~/dotfiles/bashrc" ~/.bashrc 2>/dev/null; then
