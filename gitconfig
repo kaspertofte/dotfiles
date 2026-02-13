@@ -6,7 +6,13 @@
     c = commit
     cm = commit -m
     ca = commit --amend --no-edit --reset-auhtor
-    
+
+    p = push origin HEAD
+
+    undo = reset HEAD~1 --mixed
+    rh = reset --hard
+    clean = reset --hard origin/main
+
     d = diff
     ds = diff --stat
     dc = diff --cached
