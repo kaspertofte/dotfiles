@@ -5,7 +5,7 @@
     a = add
     c = commit
     cm = commit -m
-    ca = commit --amend --no-edit --reset-auhtor
+    ca = commit --amend --no-edit --reset-author
 
     p = push origin HEAD
 
