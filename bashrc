@@ -54,3 +54,7 @@ venv_prompt() {
 PS1='\[\033[01;36m\]$(venv_prompt)\[\033[00m\]'
 PS1=$PS1'\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]'
 PS1=$PS1'\[\033[01;33m\]$(git_prompt)\[\033[00m\]\$ '
+
+shopt -s histappend
+# Save history after each command
+PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a"
