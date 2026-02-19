@@ -34,7 +34,7 @@ fi
 # Install VS Code extensions if code CLI is available
 if command -v code &> /dev/null; then
     echo "VS Code CLI found, installing extensions..."
-    bash "$DOTFILES_DIR/install-vscode-extensions.sh"
+    bash ~/dotfiles/install-vscode-extensions.sh
 else
     echo "VS Code CLI not found, skipping extension installation"
 fi
