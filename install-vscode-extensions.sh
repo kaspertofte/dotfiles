@@ -6,8 +6,14 @@ echo "Installing personal VS Code extensions..."
 
 CODE_CMD="${1:-${CODE_CLI:-code}}"
 
+CODE_CHECK_OUTPUT=$("$CODE_CMD" --list-extensions 2>&1 || true)
+if echo "$CODE_CHECK_OUTPUT" | grep -q "Command is only available in WSL or inside a Visual Studio Code terminal."; then
+    echo "VS Code CLI command '$CODE_CMD' is not usable in this startup context, skipping extension installation"
+    exit 0
+fi
+
 if ! "$CODE_CMD" --version >/dev/null 2>&1; then
-    echo "VS Code CLI command '$CODE_CMD' is not usable, skipping extension installation"
+    echo "VS Code CLI command '$CODE_CMD' is not available, skipping extension installation"
     exit 0
 fi
 
