@@ -31,43 +31,49 @@ if ! grep -q "source ~/dotfiles/bashrc" ~/.bashrc 2>/dev/null; then
     echo "source ~/dotfiles/bashrc" >> ~/.bashrc
 fi
 
-# Locate VS Code CLI even when PATH is not fully initialized yet.
-find_code_cli() {
-    if command -v code >/dev/null 2>&1; then
-        command -v code
-        return 0
-    fi
-    local code_path
+# Returns success only when the CLI is actually usable for extension commands.
+is_cli_usable() {
+    local cli="$1"
+    local output
 
-    # Common remote containers location.
-    code_path=$(find /vscode/vscode-server/bin -maxdepth 5 -type f -path '*/bin/remote-cli/code' 2>/dev/null | head -n 1)
-    if [ -n "$code_path" ]; then
-        echo "$code_path"
-        return 0
+    output=$("$cli" --list-extensions 2>&1 || true)
+    if echo "$output" | grep -q "Command is only available in WSL or inside a Visual Studio Code terminal."; then
+        return 1
     fi
 
-    # Fallback location under the user home symlink tree.
-    code_path=$(find "$HOME/.vscode-server/bin" -maxdepth 5 -type f -name code 2>/dev/null | head -n 1)
-    if [ -n "$code_path" ]; then
-        echo "$code_path"
+    return 0
+}
+
+find_code_server_cli() {
+    local cli
+    cli=$(ls -1d /vscode/vscode-server/bin/linux-x64/*/bin/code-server 2>/dev/null | sort | tail -n 1)
+    if [ -n "$cli" ]; then
+        echo "$cli"
         return 0
     fi
 
     return 1
 }
 
-# try to find the code CLI for up to 30 seconds, as it may not be available immediately when the container starts
+# Wait for a usable `code` command during startup.
 CODE_CLI=""
-for _ in {1..30}; do
-    if CODE_CLI=$(find_code_cli); then
-        break
+for _ in {1..60}; do
+    if command -v code >/dev/null 2>&1; then
+        CODE_CLI=$(command -v code)
+        if is_cli_usable "$CODE_CLI"; then
+            break
+        fi
+        CODE_CLI=""
     fi
     sleep 1
 done
 
 if [ -n "$CODE_CLI" ]; then
-    echo "VS Code CLI found at $CODE_CLI, installing extensions..."
+    echo "Usable VS Code CLI found at $CODE_CLI, installing extensions..."
     bash ~/dotfiles/install-vscode-extensions.sh "$CODE_CLI"
+elif CODE_SERVER_CLI=$(find_code_server_cli); then
+    echo "Falling back to code-server CLI at $CODE_SERVER_CLI for extension installation..."
+    bash ~/dotfiles/install-vscode-extensions.sh "$CODE_SERVER_CLI"
 else
-    echo "VS Code CLI not found after waiting, skipping extension installation"
+    echo "No usable VS Code CLI found after waiting, skipping extension installation"
 fi
