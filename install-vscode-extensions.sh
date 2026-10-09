@@ -22,6 +22,10 @@ EXTENSIONS=(
     "github.vscode-pull-request-github" # https://github.com/Microsoft/vscode-pull-request-github
     "mk12.better-git-line-blame" #https://github.com/mk12/vscode-better-git-line-blame
     "GitHub.copilot-chat"
+    "nrwl.angular-console"
+    "esbenp.prettier-vscode"
+    "dbaeumer.vscode-eslint"
+    "vitest.explorer"
 )
 
 # Install each extension
