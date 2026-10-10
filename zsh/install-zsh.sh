@@ -10,13 +10,13 @@ if command -v shellcheck >/dev/null 2>&1; then
 fi
 
 # Install zsh
-echo "Installing zsh, wget, git..."
+echo "Installing zsh, wget, git, jq..."
 if ! sudo -n apt-get update 2>/dev/null; then
   echo "Warning: Cannot use sudo. Assuming packages are already installed."
   echo "If zsh is not installed, please install it manually or configure sudo access."
 else
   sudo apt-get update
-  sudo apt-get install -y --no-install-recommends zsh wget git curl || {
+  sudo apt-get install -y --no-install-recommends zsh wget git curl jq || {
     echo "Warning: Package installation failed. Continuing with existing packages..."
   }
 fi
@@ -51,6 +51,9 @@ echo "Installing zsh plugins..."
 
 [ ! -d "$ZSH_CUSTOM/plugins/zsh-z" ] && \
   git clone https://github.com/agkozak/zsh-z "$ZSH_CUSTOM/plugins/zsh-z"
+
+[ ! -d "$ZSH_CUSTOM/plugins/nx-completion" ] && \
+  git clone https://github.com/jscutlery/nx-completion.git "$ZSH_CUSTOM/plugins/nx-completion"
 
 # Install fzf
 if [ ! -d "$HOME/.fzf" ]; then
